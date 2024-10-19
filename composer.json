@@ -1,0 +1,23 @@
+{
+    "name": "xwoole/router",
+    "version": "1.0.0-beta",
+    "description": "Xwoole HTTP router library for PHP Openswoole.",
+    "type": "lib",
+    "require-dev": {
+        "symfony/var-dumper": "7.2.x-dev",
+        "openswoole/ide-helper": "dev-master"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Xwoole\\Router\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "mohachi",
+            "email": "hachiassali15@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev"
+}
