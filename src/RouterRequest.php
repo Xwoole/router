@@ -2,28 +2,40 @@
 
 namespace Xwoole\Router;
 
+use Exception;
 use OpenSwoole\Http\Request;
 use OutOfBoundsException;
-use stdClass;
 
 class RouterRequest extends Request
 {
     
-    public function __construct(private Request $request, private stdClass $bag)
+    private array $properties = [];
+    
+    public function __construct(private Request $request)
     {
         
     }
     
     public function __isset($name)
     {
-        return property_exists($this->bag, $name) || property_exists($this->request, $name);
+        return array_key_exists($name, $this->properties) || property_exists($this->request, $name);
+    }
+    
+    public function __set($name, $value)
+    {
+        if( property_exists($this->request, $name) )
+        {
+            throw new Exception();
+        }
+        
+        $this->properties[$name] = $value;
     }
     
     public function __get($name)
     {
-        if( property_exists($this->bag, $name) )
+        if( array_key_exists($name, $this->properties) )
         {
-            return $this->bag->{$name};
+            return $this->properties[$name];
         }
         
         if( property_exists($this->request, $name) )

@@ -5,7 +5,6 @@ namespace Xwoole\Router;
 use Exception;
 use OpenSwoole\Http\Request;
 use OpenSwoole\Http\Response;
-use stdClass;
 
 trait Routing
 {
@@ -14,7 +13,8 @@ trait Routing
         "POST" => [],
     ];
     
-    private $prologue;
+    private $epilogues;
+    private $prologues;
     
     private function resolveHandler(callable|string $handler): callable
     {
@@ -87,9 +87,34 @@ trait Routing
         return null;
     }
     
-    public function setPrologue(callable $callback)
+    public function addPrologue(callable $callback)
     {
-        $this->prologue = $callback;
+        $this->prologues[] = $callback;
+    }
+    
+    public function removePrologue(callable $callback)
+    {
+        $i = array_search($callback, $this->prologues, true);
+    
+        if( false !== $i )
+        {
+            unset($this->prologues[$i]);
+        }
+    }
+    
+    public function addEpilogue(callable $callback)
+    {
+        $this->epilogues[] = $callback;
+    }
+    
+    public function removeEpilogue(callable $callback)
+    {
+        $i = array_search($callback, $this->epilogues, true);
+    
+        if( false !== $i )
+        {
+            unset($this->epilogues[$i]);
+        }
     }
     
     public function generateOpenswooleHttpServerRequestHandler(): callable
@@ -104,15 +129,35 @@ trait Routing
                 return;
             }
             
-            if( is_callable($this->prologue) )
+            $request = new RouterRequest($request);
+            
+            foreach( $this->prologues as $prologue )
             {
-                $properties = new stdClass;
-                call_user_func($this->prologue, $properties);
-                $request = new RouterRequest($request, $properties);
+                call_user_func($prologue, $request, $response);
+                
+                if( ! $response->isWritable() )
+                {
+                    return;
+                }
             }
             
             $args = [$request, $response, ...array_values($route->getArguments())];
             call_user_func_array($route->getHanlder(), $args);
+            
+            if( ! $response->isWritable() )
+            {
+                return;
+            }
+            
+            foreach( $this->epilogues as $epilogue )
+            {
+                call_user_func($epilogue, $request, $response);
+                
+                if( ! $response->isWritable() )
+                {
+                    return;
+                }
+            }
         };
     }
     
