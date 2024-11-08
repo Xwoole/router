@@ -1,12 +1,5 @@
 <?php
 
-/* [TODO]
-
-- test handling prologue middleware
-- test handling epilogue middleware
-
-*/
-
 use OpenSwoole\Coroutine\Http\Client;
 use OpenSwoole\Http\Response;
 use OpenSwoole\Http\Server;
@@ -23,12 +16,19 @@ $router->addPrologue(function(RouterRequest $request)
     $request->key = "value";
 });
 
+$router->addEpilogue(function(RouterRequest $request)
+{
+    dump("[Test] handling epilogue middleware");
+    assert(false === isset($request->key));
+});
+
 $router->get("/", function(RouterRequest $request, Response $response)
 {
     dump("[Test] handling prologue middleware");
     assert(isset($request->key));
     assert($request->key === "value");
     
+    unset($request->key);
     $response->end();
 });
 

@@ -13,8 +13,8 @@ trait Routing
         "POST" => [],
     ];
     
-    private $epilogues;
-    private $prologues;
+    private array $epilogues = [];
+    private array $prologues = [];
     
     private function resolveHandler(callable|string $handler): callable
     {
