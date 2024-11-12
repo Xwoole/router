@@ -13,8 +13,7 @@ trait Routing
         "POST" => [],
     ];
     
-    private array $epilogues = [];
-    private array $prologues = [];
+    private $middlewares = [];
     
     private function resolveHandler(callable|string $handler): callable
     {
@@ -87,33 +86,18 @@ trait Routing
         return null;
     }
     
-    public function addPrologue(callable $callback)
+    public function addMiddleware(callable $callback)
     {
-        $this->prologues[] = $callback;
+        $this->middlewares[] = $callback;
     }
     
-    public function removePrologue(callable $callback)
+    public function removeMiddleware(callable $callback)
     {
-        $i = array_search($callback, $this->prologues, true);
+        $i = array_search($callback, $this->middlewares, true);
     
         if( false !== $i )
         {
-            unset($this->prologues[$i]);
-        }
-    }
-    
-    public function addEpilogue(callable $callback)
-    {
-        $this->epilogues[] = $callback;
-    }
-    
-    public function removeEpilogue(callable $callback)
-    {
-        $i = array_search($callback, $this->epilogues, true);
-    
-        if( false !== $i )
-        {
-            unset($this->epilogues[$i]);
+            unset($this->middlewares[$i]);
         }
     }
     
@@ -129,35 +113,35 @@ trait Routing
                 return;
             }
             
+            $middlewares = $this->middlewares;
             $request = new RouterRequest($request);
             
-            foreach( $this->prologues as $prologue )
+            $next = function(RouterRequest $request, Response $response) use ($route)
             {
-                call_user_func($prologue, $request, $response);
-                
                 if( ! $response->isWritable() )
                 {
                     return;
-                }
             }
             
             $args = [$request, $response, ...array_values($route->getArguments())];
             call_user_func_array($route->getHanlder(), $args);
+            };
             
-            if( ! $response->isWritable() )
+            while( ! empty($middlewares) )
             {
-                return;
-            }
-            
-            foreach( $this->epilogues as $epilogue )
-            {
-                call_user_func($epilogue, $request, $response);
-                
+                $middleware = array_pop($middlewares);
+                $next = function(RouterRequest $request, Response $response) use ($middleware, $next)
+                {
                 if( ! $response->isWritable() )
                 {
                     return;
                 }
+                    
+                    call_user_func($middleware, $request, $response, $next);
+                };
             }
+            
+            call_user_func($next, $request, $response);
         };
     }
     

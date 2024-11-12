@@ -11,24 +11,18 @@ require_once __DIR__ . "/../vendor/autoload.php";
 $router = new Router();
 $server = new Server("localhost");
 
-$router->addPrologue(function(RouterRequest $request)
+$router->addMiddleware(function(RouterRequest $request, Response $response, $next)
 {
     $request->key = "value";
-});
-
-$router->addEpilogue(function(RouterRequest $request)
-{
-    dump("[Test] handling epilogue middleware");
-    assert(false === isset($request->key));
+    $next($request, $response);
 });
 
 $router->get("/", function(RouterRequest $request, Response $response)
 {
-    dump("[Test] handling prologue middleware");
+    dump("[Test] handling global middleware");
     assert(isset($request->key));
     assert($request->key === "value");
     
-    unset($request->key);
     $response->end();
 });
 
