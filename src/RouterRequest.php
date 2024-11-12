@@ -13,7 +13,14 @@ class RouterRequest extends Request
     
     public function __construct(private Request $request)
     {
-        
+        $this->fd = $request->fd;
+        $this->get = $request->get;
+        $this->post = $request->post;
+        $this->files = $request->files;
+        $this->header = $request->header;
+        $this->cookie = $request->cookie;
+        $this->server = $request->server;
+        $this->tmpfiles = $request->tmpfiles;
     }
     
     public function __isset($name)
@@ -36,11 +43,6 @@ class RouterRequest extends Request
         if( array_key_exists($name, $this->properties) )
         {
             return $this->properties[$name];
-        }
-        
-        if( property_exists($this->request, $name) )
-        {
-            return $this->request->{$name};
         }
         
         throw new OutOfBoundsException();
