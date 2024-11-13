@@ -7,41 +7,65 @@ use Exception;
 class Route
 {
     
+    private $handler;
+    
     private $arguments = [];
+    
+    private $middlewares = [];
+    
+    private $excludedMiddlewares = [];
+    
     private $subtitutions = [
         "~(/\\\\\*(\\\\\*)+)+~" => "(?:/.*?)",
         "~\\\\\*~" => "[^/]+?",
         "~\\\\{([\da-z][\w_]*?)\\\\}~i" => "(?<$1>[^/]+?)"
     ];
     
-    readonly string $pattern;
-    private $handler;
+    readonly string $regex;
     
     public function __construct(
-        string $pattern,
+        readonly string $pattern,
         callable $handler
     )
     {
-        $pattern = preg_replace(
+        $regex = preg_replace(
             array_keys($this->subtitutions),
             array_values($this->subtitutions),
             preg_quote($pattern, "~")
         );
         
-        if( null === $pattern )
+        if( null === $regex )
         {
             throw new Exception("invalid route pattern");
         }
         
         $this->handler = $handler;
-        $this->pattern = "~^$pattern$~";
+        $this->regex = "~^$regex$~";
     }
     
-    public function match(string $path): bool
+    public function withMiddleware(callable $callback): self
     {
-        $result = preg_match($this->pattern, $path, $matches);
-        $this->arguments = array_filter($matches, fn($k) => is_string($k), ARRAY_FILTER_USE_KEY);
-        return $result;
+        if( ! in_array($callback, $this->excludedMiddlewares) && ! in_array($callback, $this->middlewares) )
+        {
+            $this->middlewares[] = $callback;
+        }
+        
+        return $this;
+    }
+    
+    public function excludeMiddleware(callable $callback): self
+    {
+        if( false !== ($key = array_search($callback, $this->middlewares)) )
+        {
+            unset($this->middlewares[$key]);
+        }
+        
+        if( ! in_array($callback, $this->excludedMiddlewares) )
+        {
+            $this->excludedMiddlewares[] = $callback;
+        }
+        
+        return $this;
     }
     
     public function getHanlder(): callable
@@ -52,6 +76,18 @@ class Route
     public function getArguments(): array
     {
         return $this->arguments;
+    }
+    
+    public function getMiddlewares(): array
+    {
+        return $this->middlewares;
+    }
+    
+    public function match(string $path): bool
+    {
+        $result = preg_match($this->regex, $path, $matches);
+        $this->arguments = array_filter($matches, fn($k) => is_string($k), ARRAY_FILTER_USE_KEY);
+        return $result;
     }
 }
 

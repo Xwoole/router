@@ -11,6 +11,13 @@ require_once __DIR__ . "/../vendor/autoload.php";
 $router = new Router();
 $server = new Server("localhost");
 
+function testMiddleware(RouterRequest $request, Response $response, $next)
+{
+    $request->testKey = "testValue";
+    $next($request, $response);
+}
+
+$router->withMiddleware("testMiddleware");
 $router->withMiddleware(function(RouterRequest $request, Response $response, $next)
 {
     $request->key = "value";
@@ -23,8 +30,12 @@ $router->get("/", function(RouterRequest $request, Response $response)
     assert(isset($request->key));
     assert($request->key === "value");
     
+    
+    dump("[Test] excluding middleware");
+    assert(false === isset($request->testKey));
+    
     $response->end();
-});
+})->excludeMiddleware("testMiddleware");
 
 $router->register($server);
 
