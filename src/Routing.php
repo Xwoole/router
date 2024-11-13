@@ -86,19 +86,9 @@ trait Routing
         return null;
     }
     
-    public function addMiddleware(callable $callback)
+    public function withMiddleware(callable $callback)
     {
         $this->middlewares[] = $callback;
-    }
-    
-    public function removeMiddleware(callable $callback)
-    {
-        $i = array_search($callback, $this->middlewares, true);
-    
-        if( false !== $i )
-        {
-            unset($this->middlewares[$i]);
-        }
     }
     
     public function generateOpenswooleHttpServerRequestHandler(): callable

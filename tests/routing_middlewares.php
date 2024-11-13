@@ -11,7 +11,7 @@ require_once __DIR__ . "/../vendor/autoload.php";
 $router = new Router();
 $server = new Server("localhost");
 
-$router->addMiddleware(function(RouterRequest $request, Response $response, $next)
+$router->withMiddleware(function(RouterRequest $request, Response $response, $next)
 {
     $request->key = "value";
     $next($request, $response);
