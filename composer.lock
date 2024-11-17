@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5eb7f522023cb857499f45cc436dd8bc",
+    "content-hash": "3956162393aa8e4203d1b5f3d5b5751d",
     "packages": [],
     "packages-dev": [
         {
@@ -208,61 +208,11 @@
                 }
             ],
             "time": "2024-11-08T15:46:42+00:00"
-        },
-        {
-            "name": "ukko/phpredis-phpdoc",
-            "version": "5.0.1-beta8",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/ukko/phpredis-phpdoc.git",
-                "reference": "dc9dd712c3fbfcab4fe6196e2dd35d7559cb9f43"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/ukko/phpredis-phpdoc/zipball/dc9dd712c3fbfcab4fe6196e2dd35d7559cb9f43",
-                "reference": "dc9dd712c3fbfcab4fe6196e2dd35d7559cb9f43",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "phpredis-phpdoc": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Max Kamashev",
-                    "email": "max.kamashev@gmail.com",
-                    "homepage": "http://max.kamashev.name/",
-                    "role": "Developer"
-                }
-            ],
-            "description": "@phpdoc extension phpredis for IDE autocomplete",
-            "homepage": "https://github.com/ukko/phpredis-phpdoc",
-            "keywords": [
-                "helper",
-                "phpredis",
-                "redis"
-            ],
-            "support": {
-                "issues": "https://github.com/ukko/phpredis-phpdoc/issues",
-                "source": "https://github.com/ukko/phpredis-phpdoc/tree/5.0.1-beta8"
-            },
-            "time": "2021-01-22T10:44:48+00:00"
         }
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "ukko/phpredis-phpdoc": 10
-    },
+    "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {},

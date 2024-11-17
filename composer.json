@@ -16,7 +16,6 @@
     ],
     "require-dev": {
         "symfony/var-dumper": "^7.1",
-        "openswoole/ide-helper": "^22.1",
-        "ukko/phpredis-phpdoc": "^5.0.1-beta8"
+        "openswoole/ide-helper": "^22.1"
     }
 }
